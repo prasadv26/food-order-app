@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import UserContext from "../utils/UserContext";
+import { useSelector } from "react-redux";
+import cartSlice from "../utils/redux/cartSlice";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -7,6 +10,12 @@ const Header = () => {
   function toggleLogin() {
     setIsLoggedIn(!isLoggedIn);
   }
+
+  const { user } = useContext(UserContext);
+
+  //redux subsribe to store
+  const cartItems = useSelector((store) => store.cart.items);
+  console.log("cartItems: ", cartItems);
 
   return (
     <div className="flex justify-between mx-3 mt-2 p-3">
@@ -34,7 +43,10 @@ const Header = () => {
           <Link to={"/instamart"}>
             <li className="p-1 m-3">Instamart</li>
           </Link>
-          <li className="p-1 m-3">Cart</li>
+          <Link to={"/cart"}>
+            <li className="p-1 m-3">Cart {cartItems.length}</li>
+          </Link>
+          <li className="p-1 m-3 font-semibold">{user.name}</li>
           <li className="p-1 m-3 cursor-pointer" onClick={toggleLogin}>
             {isLoggedIn ? "Logout" : "Login"}
           </li>

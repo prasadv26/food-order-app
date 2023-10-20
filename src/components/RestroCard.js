@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { IMG_CDN_URL } from "../constants";
+import UserContext from "../utils/UserContext";
+import { useContext } from "react";
 
 const RestroCard = ({
   id,
@@ -9,8 +11,10 @@ const RestroCard = ({
   avgRating,
   cuisines,
 }) => {
+  const { user } = useContext(UserContext);
   return (
     <div className="w-52 h-96 m-4 p-2 ">
+      for {user.name}
       <Link to={`/restaurant/${id}`}>
         <img
           src={IMG_CDN_URL + cloudinaryImageId}

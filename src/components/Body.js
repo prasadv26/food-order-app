@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FETCH_RESTAURANTS_URL, restaurantList } from "../constants";
 import RestroCard from "./RestroCard";
 import Shimmer from "./Shimmer";
 import { Link } from "react-router-dom";
 import useOnline from "../utils/hooks/useOnline";
-
+import UserContext from "../utils/UserContext";
 const Body = () => {
   const [searchText, setSearchText] = useState("");
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [allRestaurants, setAllRestaurants] = useState([]);
+
+  const { user, setUser } = useContext(UserContext);
 
   async function fetchRestaurants() {
     const data = await fetch(FETCH_RESTAURANTS_URL);
@@ -48,7 +50,7 @@ const Body = () => {
   const isOnline = useOnline();
   if (!isOnline)
     return (
-      <h2>Seems like you are offline, Check your internet connection..</h2>
+      <h2>🔴Seems like you are offline, Check your internet connection..</h2>
     );
   //Not render component if restaurants is null
   //early return
@@ -91,6 +93,13 @@ const Body = () => {
         >
           Search
         </button>
+
+        <input
+          value={user.name}
+          onChange={(e) => {
+            setUser({ name: e.target.value, email: "mail@gmail.com" });
+          }}
+        ></input>
       </div>
       {filteredRestaurants?.length === 0 ? (
         <h1>No Restaurants Found</h1>

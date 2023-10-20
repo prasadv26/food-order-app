@@ -1,18 +1,25 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+
 import Header from "./components/Header";
 import Body from "./components/Body";
 import Footer from "./components/Footer";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import ErrorPage from "./components/ErrorPage";
-import About from "./components/About";
 import Contact from "./components/Contact";
 import RestaurantMenu from "./components/RestaurantMenu";
 import Shimmer from "./components/Shimmer";
+import UserContext from "./utils/UserContext";
+import store from "./utils/redux/store";
+import Cart from "./components/Cart";
 
 //lazyload || on demand || dynamic imports
-const Instamart = lazy(() => "./components/Instamart.js");
+const Instamart = lazy(() => import("./components/Instamart.js"));
+const About = lazy(() => import("./components/About.js"));
 /*
+
+
 
 <<< APP STRUCTURE >>>
 Header
@@ -75,13 +82,22 @@ const RestroData = {
   Cuisene: ["Italian", "Mexican"],
 };
 
-const AppLayout = () => (
-  <>
-    <Header />
-    <Outlet />
-    <Footer />
-  </>
-);
+const AppLayout = () => {
+  const [user, setUser] = useState({
+    name: "Prasad",
+    email: "prasad@gmail.com",
+  });
+
+  return (
+    <Provider store={store}>
+      <UserContext.Provider value={{ user: user, setUser: setUser }}>
+        <Header />
+        <Outlet />
+        <Footer />
+      </UserContext.Provider>
+    </Provider>
+  );
+};
 
 const router = createBrowserRouter([
   {
@@ -90,13 +106,25 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { path: "/", element: <Body /> },
-      { path: "/about", element: <About /> },
+      {
+        path: "/about",
+        element: (
+          <Suspense fallback={<Shimmer />}>
+            <About />
+          </Suspense>
+        ),
+      },
       { path: "/contact", element: <Contact /> },
       { path: "/restaurant/:id", element: <RestaurantMenu /> },
       {
         path: "/instamart",
-        element: <Instamart />,
+        element: (
+          <Suspense fallback={<Shimmer />}>
+            <Instamart />
+          </Suspense>
+        ),
       },
+      { path: "/cart", element: <Cart /> },
     ],
   },
 ]);

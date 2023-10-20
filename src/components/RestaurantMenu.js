@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
 import Shimmer from "./Shimmer";
+import MenuItems from "./MenuItem";
+
+import { useDispatch, useSelector } from "react-redux";
+import { UseSelector } from "react-redux";
+import { addItem } from "../utils/redux/cartSlice";
 
 export default RestaurantMenu = () => {
   const [items, setItems] = useState([]);
+
   const { id } = useParams();
 
   useEffect(() => {
@@ -17,6 +24,22 @@ export default RestaurantMenu = () => {
     const data = await response.json();
     setItems(data || []);
   }
+
+  const dispatch = useDispatch();
+  const handleAddItem = (item) => {
+    dispatch(addItem(item));
+  };
+
+  const cartItems = useSelector((store) => store.cart.items);
+  const [buttonText, setButtonText] = useState("Add");
+
+  //sometimes get data in card[2] or cards[1]
+
+  const menuItems =
+    items?.data?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[1]?.card
+      ?.card?.itemCards ||
+    items?.data?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card
+      ?.card?.itemCards;
 
   //items?.data?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[1]?.card?.card?.itemCards
   // console.log(items);
@@ -56,24 +79,25 @@ export default RestaurantMenu = () => {
             {items?.data?.cards[0]?.card?.card?.info?.city}
           </h2>
         </div>
-        <div className="flex-col rounded-md bg-indigo-600 p-5 m-3">
+        <div className="flex-col rounded-mdp-2 m-3">
           <h2 className="text-xl text-center text-white ">MENU</h2>
           <div>
-            {
-              //sometimes get data in card[2] or cards[1]
-              (
-                items?.data?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR
-                  ?.cards[2] ||
-                items?.data?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR
-                  ?.cards[1]
-              ).card?.card?.itemCards?.map((item, index) => (
-                <ul className="flex-col justify-center">
-                  <li className="bg-slate-200 rounded-md my-2 p-2 text-center text-lg hover:bg-white hover:text-black hover:translate-x-2">
-                    <h5 key={index}>{item.card.info.name}</h5>
-                  </li>
-                </ul>
-              ))
-            }
+            {menuItems?.map((item) => {
+              const info = item.card.info;
+              return (
+                <div key={info.id} className="flex">
+                  <MenuItems {...info} />
+                  <button
+                    className="bg-green-500 h-10 w-12 rounded-lg m-1 p-2 hover:bg-green-300 text-white"
+                    onClick={() => {
+                      handleAddItem(info);
+                    }}
+                  >
+                    Add
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
