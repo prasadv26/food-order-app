@@ -14,7 +14,7 @@ const RestroCard = ({
   const { user } = useContext(UserContext);
   return (
     <div className="w-52 h-96 m-4 p-2 ">
-      for {user.name}
+      {user.name}
       <Link to={`/restaurant/${id}`}>
         <img
           src={IMG_CDN_URL + cloudinaryImageId}
